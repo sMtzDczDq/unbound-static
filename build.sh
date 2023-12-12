@@ -205,6 +205,7 @@ make clean >/dev/null 2>&1
 	--enable-dnscrypt \
 	--enable-cachedb \
 	--enable-ipsecmod \
+	--enable-systemd \
 	--enable-ipset \
 	--with-libnghttp2="$TOP/extra/libnghttp2" \
 	--with-libevent="$TOP/extra/libevent" \
