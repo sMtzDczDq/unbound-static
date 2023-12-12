@@ -214,7 +214,7 @@ make clean >/dev/null 2>&1
 	--with-ssl="$TOP/extra/openssl" \
 	--with-libhiredis="$TOP/extra/libhiredis" \
 	CFLAGS="-Ofast -funsafe-math-optimizations -ffinite-math-only -fno-rounding-math -fexcess-precision=fast -funroll-loops -ffunction-sections -fdata-sections -pipe" \
-	LDFLAGS="-L$TOP/extra/expat/lib -lexpat" \
+	LDFLAGS="-L$TOP/extra/expat/lib -lexpat -lsystemd" \
 	CC=clang CXX=clang++
 
 make -j$(($(nproc --all) + 1))
