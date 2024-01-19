@@ -1,5 +1,5 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
+#set -x
 # Check Version
 CURRENT_VERSION=$1
 # LATEST_VERSION=$(curl -s https://nlnetlabs.nl/projects/unbound/download/ | grep "Current version" | awk '{print $2}')
@@ -7,92 +7,112 @@ LATEST_VERSION=$(curl -s -m 10 "https://api.github.com/repos/NLnetLabs/unbound/t
 [ -z "$LATEST_VERSION" ] && echo -e "\e[1;31mFailed to get UNBOUND latest version.\e[0m" && exit 1
 
 if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
-	echo -e " \n\e[1;32munbound - $CURRENT_VERSION is already the latest version! \e[0m\n"
-	exit 0
+  echo -e " \n\e[1;32munbound - $CURRENT_VERSION is already the latest version! \e[0m\n"
+  exit 0
 else
-	UNBOUND_VERSION=$LATEST_VERSION
-	echo "$LATEST_VERSION" >new_version
+  UNBOUND_VERSION=$LATEST_VERSION
+  echo "$LATEST_VERSION" > new_version
 fi
 
 # Set ENV
-[ ! -f ./env.rc ] && echo "Cannot find \`env.rc\` file." && exit 1 || source ./env.rc
+if [[ ! -f ./env.rc ]]; then
+  echo "Cannot find \`env.rc\` file."
+  exit 1
+else
+  source ./env.rc
+fi
 WORK_PATH=$(pwd)
 mkdir -p ~/static_build/extra && cd ~/static_build || exit
 TOP=$(pwd)
 
+for pkg in "${required_pkgs[@]}"; do
+  pkgman() { dpkg -s "${pkg}"; }
+  #  if pkgman > /dev/null 2>&1; then
+  if pkgman > /dev/null; then
+    printf "\033[1;36mFound %s\033[0m\n" "$pkg"
+  else
+    printf "\033[1;31mCould not find %s\033[0m\n" "$pkg"
+    found_all_deps=0
+  fi
+done
+if [ "$found_all_deps" = 0 ]; then
+  exit
+fi
 # download source code
 unbound_source() {
-	wget https://nlnetlabs.nl/downloads/unbound/unbound-"$UNBOUND_VERSION".tar.gz
-	tar -zxf unbound-"$UNBOUND_VERSION".tar.gz && rm -f unbound-"$UNBOUND_VERSION".tar.gz
+  wget https://nlnetlabs.nl/downloads/unbound/unbound-"$UNBOUND_VERSION".tar.gz
+  tar -zxf unbound-"$UNBOUND_VERSION".tar.gz && rm -f unbound-"$UNBOUND_VERSION".tar.gz
 }
 
 openssl_source() {
-	wget https://www.openssl.org/source/openssl-"$OPENSSL_VERSION".tar.gz
-	tar -zxf openssl-"$OPENSSL_VERSION".tar.gz && rm -f openssl-"$OPENSSL_VERSION".tar.gz
+  wget https://www.openssl.org/source/openssl-"$OPENSSL_VERSION".tar.gz
+  tar -zxf openssl-"$OPENSSL_VERSION".tar.gz && rm -f openssl-"$OPENSSL_VERSION".tar.gz
 }
 
 libsodium_source() {
-	wget https://download.libsodium.org/libsodium/releases/libsodium-"$LIBSODIUM_VERSION".tar.gz
-	tar -zxf libsodium-"$LIBSODIUM_VERSION".tar.gz && rm -f libsodium-"$LIBSODIUM_VERSION".tar.gz
+  wget https://download.libsodium.org/libsodium/releases/libsodium-"$LIBSODIUM_VERSION".tar.gz
+  tar -zxf libsodium-"$LIBSODIUM_VERSION".tar.gz && rm -f libsodium-"$LIBSODIUM_VERSION".tar.gz
 }
 
 libmnl_source() {
-	git clone git://git.netfilter.org/libmnl --depth=1 -b libmnl-"$LIBMNL_VERSION" libmnl-"$LIBMNL_VERSION"
+  #  git clone git://git.netfilter.org/libmnl --depth=1 -b libmnl-"$LIBMNL_VERSION" libmnl-"$LIBMNL_VERSION"
+  wget https://www.netfilter.org/pub/libmnl/libmnl-"$LIBMNL_VERSION".tar.bz2
+  tar -xf libmnl-"$LIBMNL_VERSION".tar.bz2 && rm -f libmnl-"$LIBMNL_VERSION".tar.bz2
 }
 
 libhiredis_source() {
-	wget https://github.com/redis/hiredis/archive/refs/tags/v"$LIBHIREDIS_VERSION".tar.gz -O hiredis-"$LIBHIREDIS_VERSION".tar.gz
-	tar -zxf hiredis-"$LIBHIREDIS_VERSION".tar.gz && rm -f hiredis-"$LIBHIREDIS_VERSION".tar.gz
+  wget https://github.com/redis/hiredis/archive/refs/tags/v"$LIBHIREDIS_VERSION".tar.gz -O hiredis-"$LIBHIREDIS_VERSION".tar.gz
+  tar -zxf hiredis-"$LIBHIREDIS_VERSION".tar.gz && rm -f hiredis-"$LIBHIREDIS_VERSION".tar.gz
 }
 
 libevent_source() {
-	wget https://github.com/libevent/libevent/releases/download/release-"$LIBEVENT_VERSION"/libevent-"$LIBEVENT_VERSION".tar.gz
-	tar -zxf libevent-"$LIBEVENT_VERSION".tar.gz && rm -f libevent-"$LIBEVENT_VERSION".tar.gz
+  wget https://github.com/libevent/libevent/releases/download/release-"$LIBEVENT_VERSION"/libevent-"$LIBEVENT_VERSION".tar.gz
+  tar -zxf libevent-"$LIBEVENT_VERSION".tar.gz && rm -f libevent-"$LIBEVENT_VERSION".tar.gz
 }
 
 nghttp2_source() {
-	wget https://github.com/nghttp2/nghttp2/releases/download/v"$NGHTTP2_VERSION"/nghttp2-"$NGHTTP2_VERSION".tar.gz
-	tar -zxf nghttp2-"$NGHTTP2_VERSION".tar.gz && rm -f nghttp2-"$NGHTTP2_VERSION".tar.gz
+  wget https://github.com/nghttp2/nghttp2/releases/download/v"$NGHTTP2_VERSION"/nghttp2-"$NGHTTP2_VERSION".tar.gz
+  tar -zxf nghttp2-"$NGHTTP2_VERSION".tar.gz && rm -f nghttp2-"$NGHTTP2_VERSION".tar.gz
 }
 
 expat_source() {
-	wget https://github.com/libexpat/libexpat/releases/download/R_$(echo "$EXPAT_SOURCE" | sed "s/\./_/g")/expat-"$EXPAT_SOURCE".tar.gz
-	tar -zxf expat-"$EXPAT_SOURCE".tar.gz && rm -f expat-"$EXPAT_SOURCE".tar.gz
+  wget https://github.com/libexpat/libexpat/releases/download/R_"$(echo "$EXPAT_SOURCE" | sed "s/\./_/g")"/expat-"$EXPAT_SOURCE".tar.gz
+  tar -zxf expat-"$EXPAT_SOURCE".tar.gz && rm -f expat-"$EXPAT_SOURCE".tar.gz
 }
 
 cd "$TOP"/extra || exit || exit
 openssl_source || (
-	echo -e "\e[1;31mdownload openssl failed.\e[0m"
-	exit 1
+  echo -e "\e[1;31mdownload openssl failed.\e[0m"
+  exit 1
 )
 libsodium_source || (
-	echo -e "\e[1;31mdownload libsodium failed.\e[0m"
-	exit 1
+  echo -e "\e[1;31mdownload libsodium failed.\e[0m"
+  exit 1
 )
 libmnl_source || (
-	echo -e "\e[1;31mdownload libmnl failed.\e[0m"
-	exit 1
+  echo -e "\e[1;31mdownload libmnl failed.\e[0m"
+  exit 1
 )
 libhiredis_source || (
-	echo -e "\e[1;31mdownload libhiredis failed.\e[0m"
-	exit 1
+  echo -e "\e[1;31mdownload libhiredis failed.\e[0m"
+  exit 1
 )
 libevent_source || (
-	echo -e "\e[1;31mdownload libevent failed.\e[0m"
-	exit 1
+  echo -e "\e[1;31mdownload libevent failed.\e[0m"
+  exit 1
 )
 nghttp2_source || (
-	echo -e "\e[1;31mdownload nghttp2 failed.\e[0m"
-	exit 1
+  echo -e "\e[1;31mdownload nghttp2 failed.\e[0m"
+  exit 1
 )
 expat_source || (
-	echo -e "\e[1;31mdownload expat failed.\e[0m"
-	exit 1
+  echo -e "\e[1;31mdownload expat failed.\e[0m"
+  exit 1
 )
 cd "$TOP" || exit
 unbound_source || (
-	echo -e "\e[1;31mdownload unbound failed.\e[0m"
-	exit 1
+  echo -e "\e[1;31mdownload unbound failed.\e[0m"
+  exit 1
 )
 
 # build openssl
@@ -100,11 +120,11 @@ cd "$TOP"/extra/openssl-* || exit
 ./config --prefix="$TOP"/extra/openssl no-shared CC=clang CXX=clang++
 make -j$(($(nproc --all) + 1))
 if [ $? -ne 0 ]; then
-	echo -e "\n\e[1;31mOpenSSL compilation failed.\e[0m\n"
-	exit 1
+  echo -e "\n\e[1;31mOpenSSL compilation failed.\e[0m\n"
+  exit 1
 else
-	make install_sw
-	export PKG_CONFIG_PATH=$TOP/extra/openssl/lib/pkgconfig:$PKG_CONFIG_PATH
+  make install_sw
+  export PKG_CONFIG_PATH=$TOP/extra/openssl/lib64/pkgconfig:$PKG_CONFIG_PATH
 fi
 
 # build libsodium
@@ -112,40 +132,40 @@ cd "$TOP"/extra/libsodium-* || exit
 ./configure --prefix="$TOP"/extra/libsodium --disable-shared --enable-static CC=clang CXX=clang++
 make -j$(($(nproc --all) + 1))
 if [ $? -ne 0 ]; then
-	echo -e "\n\e[1;31mlibsodium compilation failed.\e[0m\n"
-	exit 1
+  echo -e "\n\e[1;31mlibsodium compilation failed.\e[0m\n"
+  exit 1
 else
-	make install
+  make install
 fi
 
 # build libmnl
 cd "$TOP"/extra/libmnl-* || exit
-./autogen.sh && ./configure --prefix="$TOP"/extra/libmnl --disable-shared --enable-static CC=clang CXX=clang++
+#./autogen.sh && ./configure --prefix="$TOP"/extra/libmnl --disable-shared --enable-static CC=clang CXX=clang++
+./configure --prefix="$TOP"/extra/libmnl --disable-shared --enable-static CC=clang CXX=clang++
 make -j$(($(nproc --all) + 1))
 if [ $? -ne 0 ]; then
-	echo -e "\n\e[1;31mlibmnl compilation failed.\e[0m\n"
-	exit 1
+  echo -e "\n\e[1;31mlibmnl compilation failed.\e[0m\n"
+  exit 1
 else
-	make install
+  make install
 fi
 
 # build libhiredis
 cd "$TOP"/extra/hiredis-* || exit
 mkdir build && cd build || exit
 CC=clang CXX=clang++ cmake \
-	-DCMAKE_INSTALL_PREFIX="$TOP"/extra/libhiredis \
-	-DENABLE_SSL=ON \
-	-DENABLE_EXAMPLES=ON \
-	-DOPENSSL_ROOT_DIR="$TOP/extra/openssl" \
-	..
+  -DCMAKE_INSTALL_PREFIX="$TOP"/extra/libhiredis \
+  -DENABLE_SSL=ON \
+  -DENABLE_EXAMPLES=ON \
+  -DOPENSSL_ROOT_DIR="$TOP/extra/openssl" \
+  ..
 make -j$(($(nproc --all) + 1))
 if [ $? -ne 0 ]; then
-	echo -e "\n\e[1;31mlibhiredis compilation failed.\e[0m\n"
-	exit 1
+  echo -e "\n\e[1;31mlibhiredis compilation failed.\e[0m\n"
+  exit 1
 else
-	make install
-	# hack ld
-	[ -d "$TOP"/extra/libhiredis/lib64 ] && ln -s "$TOP"/extra/libhiredis/lib64 "$TOP"/extra/libhiredis/lib
+  make install
+export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
 fi
 
 # build libevent
@@ -155,25 +175,25 @@ cd "$TOP"/extra/libevent-* || exit
 ./configure --prefix="$TOP"/extra/libevent --disable-shared --enable-static "$DISABLE_SSL" CC=clang CXX=clang++
 make -j$(($(nproc --all) + 1))
 if [ $? -ne 0 ]; then
-	echo -e "\n\e[1;31mlibevent compilation failed.\e[0m\n"
-	exit 1
+  echo -e "\n\e[1;31mlibevent compilation failed.\e[0m\n"
+  exit 1
 else
-	make install
+  make install
 fi
 
 # build nghttp2
 cd "$TOP"/extra/nghttp2-* || exit
 ./configure \
-	--prefix="$TOP"/extra/libnghttp2 \
-	--disable-shared \
-	--enable-static \
-	CC=clang CXX=clang++
+  --prefix="$TOP"/extra/libnghttp2 \
+  --disable-shared \
+  --enable-static \
+  CC=clang CXX=clang++
 make -j$(($(nproc --all) + 1))
 if [ $? -ne 0 ]; then
-	echo -e "\n\e[1;31mnghttp2 compilation failed.\e[0m\n"
-	exit 1
+  echo -e "\n\e[1;31mnghttp2 compilation failed.\e[0m\n"
+  exit 1
 else
-	make install
+  make install
 fi
 
 # build expat
@@ -181,56 +201,55 @@ cd "$TOP"/extra/expat-* || exit
 ./configure --prefix="$TOP"/extra/expat --without-docbook CC=clang CXX=clang++
 make -j$(($(nproc --all) + 1))
 if [ $? -ne 0 ]; then
-	echo -e "\n\e[1;31mexpat compilation failed.\e[0m\n"
-	exit 1
+  echo -e "\n\e[1;31mexpat compilation failed.\e[0m\n"
+  exit 1
 else
-	make install
+  make install
 fi
 
 # build unbound
 cd "$TOP"/unbound-* || exit
-make clean >/dev/null 2>&1
+make clean > /dev/null 2>&1
 ./configure \
-	--prefix="$INSTALL_DIR"/unbound \
-	--with-username="" \
-	--with-chroot-dir="" \
-	--with-run-dir="" \
-	--disable-shared \
-	--disable-rpath \
-	--enable-tfo-client \
-	--enable-tfo-server \
-	--enable-fully-static \
-	--enable-pie \
-	--enable-subnet \
-	--enable-dnscrypt \
-	--enable-cachedb \
-	--enable-ipsecmod \
-	--enable-systemd \
-	--enable-ipset \
-	--with-libnghttp2="$TOP/extra/libnghttp2" \
-	--with-libevent="$TOP/extra/libevent" \
-	--with-libsodium="$TOP/extra/libsodium" \
-	--with-libmnl="$TOP/extra/libmnl" \
-	--with-ssl="$TOP/extra/openssl" \
-	--with-libhiredis="$TOP/extra/libhiredis" \
-	CFLAGS="-Ofast -funsafe-math-optimizations -ffinite-math-only -fno-rounding-math -fexcess-precision=fast -funroll-loops -ffunction-sections -fdata-sections -pipe" \
-	LDFLAGS="-L$TOP/extra/expat/lib -lexpat -lsystemd" \
-	CC=clang CXX=clang++
+  --prefix="$INSTALL_DIR"/unbound \
+  --with-username="" \
+  --with-chroot-dir="" \
+  --with-run-dir="" \
+  --disable-shared \
+  --disable-rpath \
+  --enable-tfo-client \
+  --enable-tfo-server \
+  --enable-fully-static \
+  --enable-pie \
+  --enable-subnet \
+  --enable-dnscrypt \
+  --enable-cachedb \
+  --enable-ipsecmod \
+  --enable-ipset \
+  --with-libnghttp2="$TOP/extra/libnghttp2" \
+  --with-libevent="$TOP/extra/libevent" \
+  --with-libsodium="$TOP/extra/libsodium" \
+  --with-libmnl="$TOP/extra/libmnl" \
+  --with-ssl="$TOP/extra/openssl" \
+  --with-libhiredis="$TOP/extra/libhiredis" \
+  CFLAGS="-Ofast -funsafe-math-optimizations -ffinite-math-only -fno-rounding-math -fexcess-precision=fast -funroll-loops -ffunction-sections -fdata-sections -pipe" \
+  LDFLAGS="-L$TOP/extra/expat/lib -lexpat" \
+  CC=clang CXX=clang++
 
 make -j$(($(nproc --all) + 1))
 if [ $? -eq 0 ]; then
-	rm -rf "$INSTALL_DIR"/unbound
-	sudo make install
-	sudo llvm-strip "$INSTALL_DIR"/unbound/sbin/unbound* >/dev/null 2>&1
-	echo -e " \n\e[1;32munbound-static-$UNBOUND_VERSION compilation success\e[0m\n"
-	"$INSTALL_DIR"/unbound/sbin/unbound -V
-	pushd "$INSTALL_DIR" || exit
-	mkdir -p "$WORK_PATH"/build_out
-	tar -Jcf "$WORK_PATH"/build_out/unbound-static-"$UNBOUND_VERSION"-linux-x$(getconf LONG_BIT).tar.xz unbound
-	tar -zcf "$WORK_PATH"/build_out/unbound-static-"$UNBOUND_VERSION"-linux-x$(getconf LONG_BIT).tar.gz unbound
-	popd || exit
-	cd "$WORK_PATH"/build_out && sha256sum * >sha256sum.txt
+  rm -rf "$INSTALL_DIR"/unbound
+  sudo make install
+  sudo llvm-strip "$INSTALL_DIR"/unbound/sbin/unbound* > /dev/null 2>&1
+  echo -e " \n\e[1;32munbound-static-$UNBOUND_VERSION compilation success\e[0m\n"
+  "$INSTALL_DIR"/unbound/sbin/unbound -V
+  pushd "$INSTALL_DIR" || exit
+  mkdir -p "$WORK_PATH"/build_out
+  tar -Jcf "$WORK_PATH"/build_out/unbound-static-"$UNBOUND_VERSION"-linux-x"$(getconf LONG_BIT)".tar.xz unbound
+  tar -zcf "$WORK_PATH"/build_out/unbound-static-"$UNBOUND_VERSION"-linux-x"$(getconf LONG_BIT)".tar.gz unbound
+  popd || exit
+  cd "$WORK_PATH"/build_out && sha256sum * > sha256sum.txt
 else
-	echo -e "\n\e[1;31munbound compilation failed.\e[0m\n"
-	exit 1
+  echo -e "\n\e[1;31munbound compilation failed.\e[0m\n"
+  exit 1
 fi
