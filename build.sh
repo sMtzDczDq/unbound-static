@@ -76,7 +76,7 @@ nghttp2_source() {
 }
 
 expat_source() {
-  wget https://github.com/libexpat/libexpat/releases/download/R_"$(echo "$EXPAT_SOURCE" | sed "s/\./_/g")"/expat-"$EXPAT_SOURCE".tar.gz
+  wget https://github.com/libexpat/libexpat/releases/download/R_echo "${EXPAT_SOURCE//./_}"/expat-"$EXPAT_SOURCE".tar.gz
   tar -zxf expat-"$EXPAT_SOURCE".tar.gz && rm -f expat-"$EXPAT_SOURCE".tar.gz
 }
 
@@ -118,8 +118,7 @@ unbound_source || (
 # build openssl
 cd "$TOP"/extra/openssl-* || exit
 ./config --prefix="$TOP"/extra/openssl no-shared CC=clang CXX=clang++
-make -j$(($(nproc --all) + 1))
-if [ $? -ne 0 ]; then
+if ! make -j$(($(nproc --all) + 1)); then
   echo -e "\n\e[1;31mOpenSSL compilation failed.\e[0m\n"
   exit 1
 else
@@ -130,8 +129,8 @@ fi
 # build libsodium
 cd "$TOP"/extra/libsodium-* || exit
 ./configure --prefix="$TOP"/extra/libsodium --disable-shared --enable-static CC=clang CXX=clang++
-make -j$(($(nproc --all) + 1))
-if [ $? -ne 0 ]; then
+
+if ! make -j$(($(nproc --all) + 1)); then
   echo -e "\n\e[1;31mlibsodium compilation failed.\e[0m\n"
   exit 1
 else
@@ -142,8 +141,7 @@ fi
 cd "$TOP"/extra/libmnl-* || exit
 #./autogen.sh && ./configure --prefix="$TOP"/extra/libmnl --disable-shared --enable-static CC=clang CXX=clang++
 ./configure --prefix="$TOP"/extra/libmnl --disable-shared --enable-static CC=clang CXX=clang++
-make -j$(($(nproc --all) + 1))
-if [ $? -ne 0 ]; then
+if ! make -j$(($(nproc --all) + 1)); then
   echo -e "\n\e[1;31mlibmnl compilation failed.\e[0m\n"
   exit 1
 else
@@ -159,22 +157,18 @@ CC=clang CXX=clang++ cmake \
   -DENABLE_EXAMPLES=ON \
   -DOPENSSL_ROOT_DIR="$TOP/extra/openssl" \
   ..
-make -j$(($(nproc --all) + 1))
-if [ $? -ne 0 ]; then
+if ! make -j$(($(nproc --all) + 1)); then
   echo -e "\n\e[1;31mlibhiredis compilation failed.\e[0m\n"
   exit 1
 else
   make install
-export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
+  export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
 fi
 
 # build libevent
 cd "$TOP"/extra/libevent-* || exit
-[ -f "/etc/redhat-release" ] && centos_version=$(cat /etc/redhat-release | sed -r 's/.* ([0-9]+)\..*/\1/')
-[ "$centos_version" = 7 ] && DISABLE_SSL="--disable-openssl" # fix build for centos7
 ./configure --prefix="$TOP"/extra/libevent --disable-shared --enable-static "$DISABLE_SSL" CC=clang CXX=clang++
-make -j$(($(nproc --all) + 1))
-if [ $? -ne 0 ]; then
+if ! make -j$(($(nproc --all) + 1)); then
   echo -e "\n\e[1;31mlibevent compilation failed.\e[0m\n"
   exit 1
 else
@@ -188,8 +182,7 @@ cd "$TOP"/extra/nghttp2-* || exit
   --disable-shared \
   --enable-static \
   CC=clang CXX=clang++
-make -j$(($(nproc --all) + 1))
-if [ $? -ne 0 ]; then
+if ! make -j$(($(nproc --all) + 1)); then
   echo -e "\n\e[1;31mnghttp2 compilation failed.\e[0m\n"
   exit 1
 else
@@ -199,8 +192,7 @@ fi
 # build expat
 cd "$TOP"/extra/expat-* || exit
 ./configure --prefix="$TOP"/extra/expat --without-docbook CC=clang CXX=clang++
-make -j$(($(nproc --all) + 1))
-if [ $? -ne 0 ]; then
+if ! make -j$(($(nproc --all) + 1)); then
   echo -e "\n\e[1;31mexpat compilation failed.\e[0m\n"
   exit 1
 else
@@ -236,8 +228,7 @@ make clean > /dev/null 2>&1
   LDFLAGS="-L$TOP/extra/expat/lib -lexpat" \
   CC=clang CXX=clang++
 
-make -j$(($(nproc --all) + 1))
-if [ $? -eq 0 ]; then
+if ! make -j$(($(nproc --all) + 1)); then
   rm -rf "$INSTALL_DIR"/unbound
   sudo make install
   sudo llvm-strip "$INSTALL_DIR"/unbound/sbin/unbound* > /dev/null 2>&1
@@ -248,7 +239,7 @@ if [ $? -eq 0 ]; then
   tar -Jcf "$WORK_PATH"/build_out/unbound-static-"$UNBOUND_VERSION"-linux-x"$(getconf LONG_BIT)".tar.xz unbound
   tar -zcf "$WORK_PATH"/build_out/unbound-static-"$UNBOUND_VERSION"-linux-x"$(getconf LONG_BIT)".tar.gz unbound
   popd || exit
-  cd "$WORK_PATH"/build_out && sha256sum * > sha256sum.txt
+  cd "$WORK_PATH"/build_out && sha256sum ./* > sha256sum.txt
 else
   echo -e "\n\e[1;31munbound compilation failed.\e[0m\n"
   exit 1
