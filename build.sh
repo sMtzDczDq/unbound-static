@@ -21,7 +21,7 @@ for pkg in "${required_pkgs[@]}"; do
   fi
 done
 if [ "$found_all_deps" = 0 ]; then
-  printf "Please run: sudo apt install %s " "${missing_pkgs[@]}"
+  printf 'Please run: sudo apt install %s\n' "${missing_pkgs[@]}"
   exit
 fi
 # Check Version
