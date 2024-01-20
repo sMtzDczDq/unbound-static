@@ -79,7 +79,7 @@ nghttp2_source() {
 }
 
 expat_source() {
-  wget https://github.com/libexpat/libexpat/releases/download/R_echo "${EXPAT_SOURCE//./_}"/expat-"$EXPAT_SOURCE".tar.gz
+  wget https://github.com/libexpat/libexpat/releases/download/R_"${EXPAT_SOURCE//./_}"/expat-"$EXPAT_SOURCE".tar.gz
   tar -zxf expat-"$EXPAT_SOURCE".tar.gz && rm -f expat-"$EXPAT_SOURCE".tar.gz
 }
 
