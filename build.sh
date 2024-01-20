@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 #set -x
+
+for pkg in "${required_pkgs[@]}"; do
+  pkgman() { dpkg -s "${pkg}"; }
+  #  if pkgman > /dev/null 2>&1; then
+  if pkgman > /dev/null; then
+    printf "\033[1;36mFound %s\033[0m\n" "$pkg"
+  else
+    printf "\033[1;31mCould not find %s\033[0m\n" "$pkg"
+    found_all_deps=0
+  fi
+done
+if [ "$found_all_deps" = 0 ]; then
+  exit
+fi
 # Check Version
 CURRENT_VERSION=$1
 # LATEST_VERSION=$(curl -s https://nlnetlabs.nl/projects/unbound/download/ | grep "Current version" | awk '{print $2}')
@@ -25,19 +39,6 @@ WORK_PATH=$(pwd)
 mkdir -p ~/static_build/extra && cd ~/static_build || exit
 TOP=$(pwd)
 
-for pkg in "${required_pkgs[@]}"; do
-  pkgman() { dpkg -s "${pkg}"; }
-  #  if pkgman > /dev/null 2>&1; then
-  if pkgman > /dev/null; then
-    printf "\033[1;36mFound %s\033[0m\n" "$pkg"
-  else
-    printf "\033[1;31mCould not find %s\033[0m\n" "$pkg"
-    found_all_deps=0
-  fi
-done
-if [ "$found_all_deps" = 0 ]; then
-  exit
-fi
 # download source code
 unbound_source() {
   wget https://nlnetlabs.nl/downloads/unbound/unbound-"$UNBOUND_VERSION".tar.gz
