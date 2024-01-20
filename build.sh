@@ -20,7 +20,7 @@ for pkg in "${required_pkgs[@]}"; do
   fi
 done
 if [ ${#missing_pkgs[@]} -gt 0 ]; then
-  printf 'Missing packages.\nPlease run: sudo apt install %s\n' "${missing_pkgs[*]}"
+  printf 'Missing packages\nPlease run: sudo apt install %s\n' "${missing_pkgs[*]}"
   exit
 fi
 # Check Version
@@ -241,6 +241,7 @@ if ! make -j$(($(nproc --all) + 1)); then
   mkdir -p "$WORK_PATH"/build_out
   tar -Jcf "$WORK_PATH"/build_out/unbound-static-"$UNBOUND_VERSION"-linux-x"$(getconf LONG_BIT)".tar.xz unbound
   tar -zcf "$WORK_PATH"/build_out/unbound-static-"$UNBOUND_VERSION"-linux-x"$(getconf LONG_BIT)".tar.gz unbound
+  7z -mx=9 a "$WORK_PATH"/build_out/unbound-static-"$UNBOUND_VERSION"-linux-x"$(getconf LONG_BIT)".7z unbound
   popd || exit
   cd "$WORK_PATH"/build_out && sha256sum ./* > sha256sum.txt
 else
