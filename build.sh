@@ -200,6 +200,7 @@ if ! make -j$(($(nproc --all) + 1)); then
   exit 1
 else
   make install
+  export PKG_CONFIG_PATH=$TOP/extra/expat/lib/pkgconfig:$PKG_CONFIG_PATH
 fi
 
 # build unbound
@@ -222,6 +223,7 @@ make clean > /dev/null 2>&1
   --enable-ipsecmod \
   --enable-ipset \
   --with-libnghttp2="$TOP/extra/libnghttp2" \
+  --with-libexpat="$TOP/extra/expat" \
   --with-libevent="$TOP/extra/libevent" \
   --with-libsodium="$TOP/extra/libsodium" \
   --with-libmnl="$TOP/extra/libmnl" \
