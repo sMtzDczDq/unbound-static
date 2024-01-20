@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
-#set -x
+set -x
+
+# Set ENV
+if [[ ! -f ./env.rc ]]; then
+  echo "Cannot find \`env.rc\` file."
+  exit 1
+else
+  source ./env.rc
+fi
 
 for pkg in "${required_pkgs[@]}"; do
   pkgman() { dpkg -s "${pkg}"; }
@@ -28,13 +36,6 @@ else
   echo "$LATEST_VERSION" > new_version
 fi
 
-# Set ENV
-if [[ ! -f ./env.rc ]]; then
-  echo "Cannot find \`env.rc\` file."
-  exit 1
-else
-  source ./env.rc
-fi
 WORK_PATH=$(pwd)
 mkdir -p ~/static_build/extra && cd ~/static_build || exit
 TOP=$(pwd)
