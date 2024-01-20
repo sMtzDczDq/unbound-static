@@ -12,14 +12,16 @@ fi
 for pkg in "${required_pkgs[@]}"; do
   pkgman() { dpkg -s "${pkg}"; }
   #  if pkgman > /dev/null 2>&1; then
-  if pkgman > /dev/null; then
+  if pkgman > /dev/null 2>&1; then
     printf "\033[1;36mFound %s\033[0m\n" "$pkg"
   else
     printf "\033[1;31mCould not find %s\033[0m\n" "$pkg"
+    missing_pkgs+="$pkg"
     found_all_deps=0
   fi
 done
 if [ "$found_all_deps" = 0 ]; then
+  printf "Please run: sudo apt install %s" "${missing_pkgs[@]}"
   exit
 fi
 # Check Version
