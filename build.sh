@@ -16,7 +16,7 @@ for pkg in "${required_pkgs[@]}"; do
     printf "\033[1;36mFound %s\033[0m\n" "$pkg"
   else
     printf "\033[1;31mCould not find %s\033[0m\n" "$pkg"
-    missing_pkgs+="$pkg"
+    missing_pkgs[]+="$pkg"
     found_all_deps=0
   fi
 done
