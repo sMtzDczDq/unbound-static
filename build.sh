@@ -8,7 +8,7 @@ if [[ ! -f ./env.rc ]]; then
 else
   source ./env.rc
 fi
-
+declare -a missing_pkgs
 for pkg in "${required_pkgs[@]}"; do
   pkgman() { dpkg -s "${pkg}"; }
   #  if pkgman > /dev/null 2>&1; then
@@ -16,11 +16,10 @@ for pkg in "${required_pkgs[@]}"; do
     printf "\033[1;36mFound %s\033[0m\n" "$pkg"
   else
     printf "\033[1;31mCould not find %s\033[0m\n" "$pkg"
-    missing_pkgs[]+="$pkg"
-    found_all_deps=0
+    missing_pkgs+=(pkg)
   fi
 done
-if [ "$found_all_deps" = 0 ]; then
+if [ ${#missing_pkgs[@]} -gt 0 ]; then
   printf 'Please run: sudo apt install %s\n' "${missing_pkgs[@]}"
   exit
 fi
