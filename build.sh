@@ -199,7 +199,7 @@ fi
 
 # build libhiredis
 if ! [ "$LIBHIREDIS" = "$LIBHIREDIS_VERSION" ]; then
-  cd "$TOP"/extra/hiredis-*"$LIBHIREDIS_VERSION" || exit
+  cd "$TOP"/extra/hiredis-"$LIBHIREDIS_VERSION" || exit
   mkdir build && cd build || exit
   CC=clang CXX=clang++ cmake \
     -DCMAKE_INSTALL_PREFIX="$TOP"/extra/libhiredis \
@@ -287,7 +287,7 @@ make clean > /dev/null 2>&1
   --prefix="$INSTALL_DIR"/unbound \
   --with-chroot-dir="" \
   --with-libevent="$TOP/extra/libevent" \
-  --with-libexpat="$TOP/extra/expat" \
+`#  --with-libexpat="$TOP/extra/expat"` \
   --with-libhiredis="$TOP/extra/libhiredis" \
   --with-libmnl="$TOP/extra/libmnl" \
   --with-libnghttp2="$TOP/extra/libnghttp2" \
