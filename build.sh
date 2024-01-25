@@ -296,7 +296,8 @@ make clean > /dev/null 2>&1
   --with-ssl="$TOP/extra/openssl" \
   --with-username="" \
   CFLAGS="-Ofast -funsafe-math-optimizations -ffinite-math-only -fno-rounding-math -fexcess-precision=fast -funroll-loops -ffunction-sections -fdata-sections -pipe" \
-  CC=clang CXX=clang++
+  CC=clang CXX=clang++ \
+  LDFLAGS="-L$TOP/extra/expat/lib -lexpat"
 
 if ! make -j$(($(nproc --all) + 1)); then
   rm -rf "$INSTALL_DIR"/unbound
@@ -315,3 +316,5 @@ else
   echo -e "\n\e[1;31munbound compilation failed.\e[0m\n"
   exit 1
 fi
+# export TOP="/home/mitch/unbound-static/static_build"
+#export PKG_CONFIG_PATH=$TOP/extra/expat/lib/pkgconfig:$TOP/extra/libhiredis/lib/pkgconfig:$TOP/extra/openssl/lib64/pkgconfig:$PKG_CONFIG_PATH
