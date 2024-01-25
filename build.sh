@@ -48,45 +48,74 @@ unbound_source() {
 }
 
 openssl_source() {
-  wget https://www.openssl.org/source/openssl-"$OPENSSL_VERSION".tar.gz
-  tar -zxf openssl-"$OPENSSL_VERSION".tar.gz && rm -f openssl-"$OPENSSL_VERSION".tar.gz
+  if ! [ "$OPENSSL" = "$OPENSSL_VERSION" ]; then
+    wget https://www.openssl.org/source/openssl-"$OPENSSL_VERSION".tar.gz
+    tar -zxf openssl-"$OPENSSL_VERSION".tar.gz && rm -f openssl-"$OPENSSL_VERSION".tar.gz
+  else
+    printf "\033[1;32mFound openssl %s skipping download\033[0m\n" "$OPENSSL_VERSION"
+  fi
 }
 
 libsodium_source() {
-  wget https://download.libsodium.org/libsodium/releases/libsodium-"$LIBSODIUM_VERSION".tar.gz
-  mkdir libsodium-"$LIBSODIUM_VERSION" && tar -zxf libsodium-"$LIBSODIUM_VERSION".tar.gz && rm -f libsodium-"$LIBSODIUM_VERSION".tar.gz
+  if ! [ "$LIBSODIUM" = "$LIBSODIUM_VERSION" ]; then
+    wget https://download.libsodium.org/libsodium/releases/libsodium-"$LIBSODIUM_VERSION".tar.gz
+    mkdir libsodium-"$LIBSODIUM_VERSION" && tar -zxf libsodium-"$LIBSODIUM_VERSION".tar.gz -C libsodium-"$LIBSODIUM_VERSION" && rm -f libsodium-"$LIBSODIUM_VERSION".tar.gz
+  else
+    printf "\033[1;32mFound libsodium %s skipping download\033[0m\n" "$LIBSODIUM_VERSION"
+  fi
 }
 
 libmnl_source() {
-  #  git clone git://git.netfilter.org/libmnl --depth=1 -b libmnl-"$LIBMNL_VERSION" libmnl-"$LIBMNL_VERSION"
-  wget https://www.netfilter.org/pub/libmnl/libmnl-"$LIBMNL_VERSION".tar.bz2
-  tar -xf libmnl-"$LIBMNL_VERSION".tar.bz2 && rm -f libmnl-"$LIBMNL_VERSION".tar.bz2
+  if ! [ "$LIBMNL" = "$LIBMNL_VERSION" ]; then
+    #  git clone git://git.netfilter.org/libmnl --depth=1 -b libmnl-"$LIBMNL_VERSION" libmnl-"$LIBMNL_VERSION"
+    wget https://www.netfilter.org/pub/libmnl/libmnl-"$LIBMNL_VERSION".tar.bz2
+    tar -xf libmnl-"$LIBMNL_VERSION".tar.bz2 && rm -f libmnl-"$LIBMNL_VERSION".tar.bz2
+  else
+    printf "\033[1;32mFound libmnl %s skipping download\033[0m\n" "$LIBMNL_VERSION"
+  fi
 }
 
 libhiredis_source() {
-  wget https://github.com/redis/hiredis/archive/refs/tags/v"$LIBHIREDIS_VERSION".tar.gz -O hiredis-"$LIBHIREDIS_VERSION".tar.gz
-  tar -zxf hiredis-"$LIBHIREDIS_VERSION".tar.gz && rm -f hiredis-"$LIBHIREDIS_VERSION".tar.gz
+  if ! [ "$LIBHIREDIS" = "$LIBHIREDIS_VERSION" ]; then
+    wget https://github.com/redis/hiredis/archive/refs/tags/v"$LIBHIREDIS_VERSION".tar.gz -O hiredis-"$LIBHIREDIS_VERSION".tar.gz
+    tar -zxf hiredis-"$LIBHIREDIS_VERSION".tar.gz && rm -f hiredis-"$LIBHIREDIS_VERSION".tar.gz
+  else
+    printf "\033[1;32mFound libhiredis %s skipping download\033[0m\n" "$LIBHIREDIS_VERSION"
+  fi
 }
 
 libevent_source() {
-  wget https://github.com/libevent/libevent/releases/download/release-"$LIBEVENT_VERSION"/libevent-"$LIBEVENT_VERSION".tar.gz
-  tar -zxf libevent-"$LIBEVENT_VERSION".tar.gz && rm -f libevent-"$LIBEVENT_VERSION".tar.gz
+  if ! [ "$LIBEVENT_VERSION" = "$LIBEVENT_VERSION" ]; then
+    wget https://github.com/libevent/libevent/releases/download/release-"$LIBEVENT_VERSION"/libevent-"$LIBEVENT_VERSION".tar.gz
+    tar -zxf libevent-"$LIBEVENT_VERSION".tar.gz && rm -f libevent-"$LIBEVENT_VERSION".tar.gz
+  else
+    printf "\033[1;32mFound libevent %s skipping download\033[0m\n" "$LIBEVENT_VERSION"
+  fi
 }
 
 nghttp2_source() {
-  wget https://github.com/nghttp2/nghttp2/releases/download/v"$NGHTTP2_VERSION"/nghttp2-"$NGHTTP2_VERSION".tar.gz
-  tar -zxf nghttp2-"$NGHTTP2_VERSION".tar.gz && rm -f nghttp2-"$NGHTTP2_VERSION".tar.gz
+  if ! [ "$NGHTTP2" = "$NGHTTP2_VERSION" ]; then
+    wget https://github.com/nghttp2/nghttp2/releases/download/v"$NGHTTP2_VERSION"/nghttp2-"$NGHTTP2_VERSION".tar.gz
+    tar -zxf nghttp2-"$NGHTTP2_VERSION".tar.gz && rm -f nghttp2-"$NGHTTP2_VERSION".tar.gz
+  else
+    printf "\033[1;32mFound nghttp2 %s skipping download\033[0m\n" "$NGHTTP2_VERSION"
+  fi
 }
 
 expat_source() {
-  wget https://github.com/libexpat/libexpat/releases/download/R_"${EXPAT_SOURCE//./_}"/expat-"$EXPAT_SOURCE".tar.gz
-  tar -zxf expat-"$EXPAT_SOURCE".tar.gz && rm -f expat-"$EXPAT_SOURCE".tar.gz
+  if ! [ "$EXPAT" = "$EXPAT_SOURCE" ]; then
+    wget https://github.com/libexpat/libexpat/releases/download/R_"${EXPAT_SOURCE//./_}"/expat-"$EXPAT_SOURCE".tar.gz
+    tar -zxf expat-"$EXPAT_SOURCE".tar.gz && rm -f expat-"$EXPAT_SOURCE".tar.gz
+  else
+    printf "\033[1;32mFound expat %s skipping download\033[0m\n" "$EXPAT_SOURCE"
+  fi
 }
 
 cd "$TOP"/extra || exit
 if [ -f "$TOP/extra/.progress" ]; then
   source "$TOP/extra/.progress"
 fi
+
 openssl_source || (
   echo -e "\e[1;31mdownload openssl failed.\e[0m"
   exit 1
@@ -122,95 +151,123 @@ unbound_source || (
 )
 
 # build openssl
-cd "$TOP"/extra/openssl-"$OPENSSL_VERSION" || exit
-./config --prefix="$TOP"/extra/openssl no-shared CC=clang CXX=clang++
-if ! make -j$(($(nproc --all) + 1)); then
-  echo -e "\n\e[1;31mOpenSSL compilation failed.\e[0m\n"
-  exit 1
+if ! [ "$OPENSSL" = "$OPENSSL_VERSION" ]; then
+  cd "$TOP"/extra/openssl-"$OPENSSL_VERSION" || exit
+  ./config --prefix="$TOP"/extra/openssl no-shared CC=clang CXX=clang++
+  if ! make -j$(($(nproc --all) + 1)); then
+    echo -e "\n\e[1;31mOpenSSL compilation failed.\e[0m\n"
+    exit 1
+  else
+    make install_sw
+    echo "OPENSSL=$OPENSSL_VERSION" >> "$TOP/extra/.progress"
+  fi
 else
-  make install_sw
-  export PKG_CONFIG_PATH=$TOP/extra/openssl/lib64/pkgconfig:$PKG_CONFIG_PATH
-  echo "OPENSSL=$OPENSSL_VERSION" >> "$TOP/extra/.progress"
+  printf "\033[1;32mFound openssl %s skipping compilation\033[0m\n" "$OPENSSL_VERSION"
 fi
+export PKG_CONFIG_PATH=$TOP/extra/openssl/lib64/pkgconfig:$PKG_CONFIG_PATH
 
 # build libsodium
-cd "$TOP"/extra/libsodium-"$LIBSODIUM_VERSION"/libsodium-stable || exit
-./configure --prefix="$TOP"/extra/libsodium --disable-shared --enable-static CC=clang CXX=clang++
-if ! make -j$(($(nproc --all) + 1)); then
-  echo -e "\n\e[1;31mlibsodium compilation failed.\e[0m\n"
-  exit 1
+if ! [ "$LIBSODIUM" = "$LIBSODIUM_VERSION" ]; then
+  cd "$TOP"/extra/libsodium-"$LIBSODIUM_VERSION"/libsodium-stable || exit
+  ./configure --prefix="$TOP"/extra/libsodium --disable-shared --enable-static CC=clang CXX=clang++
+  if ! make -j$(($(nproc --all) + 1)); then
+    echo -e "\n\e[1;31mlibsodium compilation failed.\e[0m\n"
+    exit 1
+  else
+    make install
+    echo "LIBSODIUM=$LIBSODIUM_VERSION" >> "$TOP/extra/.progress"
+  fi
 else
-  make install
-  echo "LIBSODIUM" >> "$TOP/extra/.progress"
+  printf "\033[1;32mFound libsodium %s skipping compilation\033[0m\n" "$LIBSODIUM_VERSION"
 fi
 
 # build libmnl
-cd "$TOP"/extra/libmnl-"$LIBMNL_VERSION" || exit
-#./autogen.sh && ./configure --prefix="$TOP"/extra/libmnl --disable-shared --enable-static CC=clang CXX=clang++
-./configure --prefix="$TOP"/extra/libmnl --disable-shared --enable-static CC=clang CXX=clang++
-if ! make -j$(($(nproc --all) + 1)); then
-  echo -e "\n\e[1;31mlibmnl compilation failed.\e[0m\n"
-  exit 1
+if ! [ "$LIBMNL" = "$LIBMNL_VERSION" ]; then
+  cd "$TOP"/extra/libmnl-"$LIBMNL_VERSION" || exit
+  #./autogen.sh && ./configure --prefix="$TOP"/extra/libmnl --disable-shared --enable-static CC=clang CXX=clang++
+  ./configure --prefix="$TOP"/extra/libmnl --disable-shared --enable-static CC=clang CXX=clang++
+  if ! make -j$(($(nproc --all) + 1)); then
+    echo -e "\n\e[1;31mlibmnl compilation failed.\e[0m\n"
+    exit 1
+  else
+    make install
+    echo "LIBMNL=$LIBMNL_VERSION" >> "$TOP/extra/.progress"
+  fi
 else
-  make install
-  echo "LIBML" >> "$TOP/extra/.progress"
+  printf "\033[1;32mFound libmnl %s skipping compilation\033[0m\n" "$LIBMNL_VERSION"
 fi
 
 # build libhiredis
-cd "$TOP"/extra/hiredis-*"$LIBHIREDIS_VERSION" || exit
-mkdir build && cd build || exit
-CC=clang CXX=clang++ cmake \
-  -DCMAKE_INSTALL_PREFIX="$TOP"/extra/libhiredis \
-  -DENABLE_SSL=ON \
-  -DENABLE_EXAMPLES=ON \
-  -DOPENSSL_ROOT_DIR="$TOP/extra/openssl" \
-  ..
-if ! make -j$(($(nproc --all) + 1)); then
-  echo -e "\n\e[1;31mlibhiredis compilation failed.\e[0m\n"
-  exit 1
+if ! [ "$LIBHIREDIS" = "$LIBHIREDIS_VERSION" ]; then
+  cd "$TOP"/extra/hiredis-*"$LIBHIREDIS_VERSION" || exit
+  mkdir build && cd build || exit
+  CC=clang CXX=clang++ cmake \
+    -DCMAKE_INSTALL_PREFIX="$TOP"/extra/libhiredis \
+    -DENABLE_SSL=ON \
+    -DENABLE_EXAMPLES=ON \
+    -DOPENSSL_ROOT_DIR="$TOP/extra/openssl" \
+    ..
+  if ! make -j$(($(nproc --all) + 1)); then
+    echo -e "\n\e[1;31mlibhiredis compilation failed.\e[0m\n"
+    exit 1
+  else
+    make install
+    echo "LIBHIREDIS=$LIBHIREDIS_VERSION" >> "$TOP/extra/.progress"
+  fi
 else
-  make install
-  export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
-  echo "LIBHIREDIS" >> "$TOP/extra/.progress"
+  printf "\033[1;32mFound libhiredis %s skipping compilation\033[0m\n" "$LIBHIREDIS_VERSION"
 fi
+export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
 
 # build libevent
-cd "$TOP"/extra/libevent-"$LIBEVENT_VERSION" || exit
-./configure --prefix="$TOP"/extra/libevent --disable-shared --enable-static "$DISABLE_SSL" CC=clang CXX=clang++
-if ! make -j$(($(nproc --all) + 1)); then
-  echo -e "\n\e[1;31mlibevent compilation failed.\e[0m\n"
-  exit 1
+if ! [ "$LIBEVENT" = "$LIBEVENT_VERSION" ]; then
+  cd "$TOP"/extra/libevent-"$LIBEVENT_VERSION" || exit
+  ./configure --prefix="$TOP"/extra/libevent --disable-shared --enable-static "$DISABLE_SSL" CC=clang CXX=clang++
+  if ! make -j$(($(nproc --all) + 1)); then
+    echo -e "\n\e[1;31mlibevent compilation failed.\e[0m\n"
+    exit 1
+  else
+    make install
+    echo "LIBEVENT=$LIBEVENT_VERSION" >> "$TOP/extra/.progress"
+  fi
 else
-  make install
-  echo "LIBEVENT" >> "$TOP/extra/.progress"
+  printf "\033[1;32mFound libevent %s skipping compilation\033[0m\n" "$LIBEVENT_VERSION"
 fi
 
 # build nghttp2
-cd "$TOP"/extra/nghttp2-"$NGHTTP2_VERSION" || exit
-./configure \
-  --prefix="$TOP"/extra/libnghttp2 \
-  --disable-shared \
-  --enable-static \
-  CC=clang CXX=clang++
-if ! make -j$(($(nproc --all) + 1)); then
-  echo -e "\n\e[1;31mnghttp2 compilation failed.\e[0m\n"
-  exit 1
+if ! [ "$NGHTTP2" = "$NGHTTP2_VERSION" ]; then
+  cd "$TOP"/extra/nghttp2-"$NGHTTP2_VERSION" || exit
+  ./configure \
+    --prefix="$TOP"/extra/libnghttp2 \
+    --disable-shared \
+    --enable-static \
+    CC=clang CXX=clang++
+  if ! make -j$(($(nproc --all) + 1)); then
+    echo -e "\n\e[1;31mnghttp2 compilation failed.\e[0m\n"
+    exit 1
+  else
+    make install
+    echo "NGHTTP2=$NGHTTP2_VERSION" >> "$TOP/extra/.progress"
+  fi
 else
-  make install
-  echo "NGHTTP2" >> "$TOP/extra/.progress"
+  printf "\033[1;32mFound nghttp2 %s skipping compilation\033[0m\n" "$NGHTTP2_VERSION"
 fi
 
 # build expat
-cd "$TOP"/extra/expat-"$EXPAT_SOURCE" || exit
-./configure --prefix="$TOP"/extra/expat --without-docbook CC=clang CXX=clang++
-if ! make -j$(($(nproc --all) + 1)); then
-  echo -e "\n\e[1;31mexpat compilation failed.\e[0m\n"
-  exit 1
+if ! [ "$EXPAT" = "$EXPAT_SOURCE" ]; then
+  cd "$TOP"/extra/expat-"$EXPAT_SOURCE" || exit
+  ./configure --prefix="$TOP"/extra/expat --without-docbook CC=clang CXX=clang++
+  if ! make -j$(($(nproc --all) + 1)); then
+    echo -e "\n\e[1;31mexpat compilation failed.\e[0m\n"
+    exit 1
+  else
+    make install
+    echo "EXPAT=$EXPAT_SOURCE" >> "$TOP/extra/.progress"
+  fi
 else
-  make install
-  export PKG_CONFIG_PATH=$TOP/extra/expat/lib/pkgconfig:$PKG_CONFIG_PATH
-  echo "EXPAT" >> "$TOP/extra/.progress"
+  printf "\033[1;32mFound expat %s skipping compilation\033[0m\n" "$EXPAT_SOURCE"
 fi
+export PKG_CONFIG_PATH=$TOP/extra/expat/lib/pkgconfig:$PKG_CONFIG_PATH
 
 # build unbound
 cd "$TOP"/unbound-* || exit
