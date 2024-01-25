@@ -38,7 +38,7 @@ else
 fi
 
 WORK_PATH=$(pwd)
-mkdir -p ~/static_build/extra && cd ~/static_build || exit
+mkdir -p "$WORK_PATH"/static_build/extra && cd "$WORK_PATH"/static_build || exit
 TOP=$(pwd)
 
 # download source code
@@ -54,7 +54,7 @@ openssl_source() {
 
 libsodium_source() {
   wget https://download.libsodium.org/libsodium/releases/libsodium-"$LIBSODIUM_VERSION".tar.gz
-  tar -zxf libsodium-"$LIBSODIUM_VERSION".tar.gz && rm -f libsodium-"$LIBSODIUM_VERSION".tar.gz
+  mkdir libsodium-"$LIBSODIUM_VERSION" && tar -zxf libsodium-"$LIBSODIUM_VERSION".tar.gz && rm -f libsodium-"$LIBSODIUM_VERSION".tar.gz
 }
 
 libmnl_source() {
@@ -83,7 +83,10 @@ expat_source() {
   tar -zxf expat-"$EXPAT_SOURCE".tar.gz && rm -f expat-"$EXPAT_SOURCE".tar.gz
 }
 
-cd "$TOP"/extra || exit || exit
+cd "$TOP"/extra || exit
+if [ -f "$TOP/extra/.progress" ]; then
+  source "$TOP/extra/.progress"
+fi
 openssl_source || (
   echo -e "\e[1;31mdownload openssl failed.\e[0m"
   exit 1
@@ -119,7 +122,7 @@ unbound_source || (
 )
 
 # build openssl
-cd "$TOP"/extra/openssl-* || exit
+cd "$TOP"/extra/openssl-"$OPENSSL_VERSION" || exit
 ./config --prefix="$TOP"/extra/openssl no-shared CC=clang CXX=clang++
 if ! make -j$(($(nproc --all) + 1)); then
   echo -e "\n\e[1;31mOpenSSL compilation failed.\e[0m\n"
@@ -127,21 +130,22 @@ if ! make -j$(($(nproc --all) + 1)); then
 else
   make install_sw
   export PKG_CONFIG_PATH=$TOP/extra/openssl/lib64/pkgconfig:$PKG_CONFIG_PATH
+  echo "OPENSSL=$OPENSSL_VERSION" >> "$TOP/extra/.progress"
 fi
 
 # build libsodium
-cd "$TOP"/extra/libsodium-* || exit
+cd "$TOP"/extra/libsodium-"$LIBSODIUM_VERSION"/libsodium-stable || exit
 ./configure --prefix="$TOP"/extra/libsodium --disable-shared --enable-static CC=clang CXX=clang++
-
 if ! make -j$(($(nproc --all) + 1)); then
   echo -e "\n\e[1;31mlibsodium compilation failed.\e[0m\n"
   exit 1
 else
   make install
+  echo "LIBSODIUM" >> "$TOP/extra/.progress"
 fi
 
 # build libmnl
-cd "$TOP"/extra/libmnl-* || exit
+cd "$TOP"/extra/libmnl-"$LIBMNL_VERSION" || exit
 #./autogen.sh && ./configure --prefix="$TOP"/extra/libmnl --disable-shared --enable-static CC=clang CXX=clang++
 ./configure --prefix="$TOP"/extra/libmnl --disable-shared --enable-static CC=clang CXX=clang++
 if ! make -j$(($(nproc --all) + 1)); then
@@ -149,10 +153,11 @@ if ! make -j$(($(nproc --all) + 1)); then
   exit 1
 else
   make install
+  echo "LIBML" >> "$TOP/extra/.progress"
 fi
 
 # build libhiredis
-cd "$TOP"/extra/hiredis-* || exit
+cd "$TOP"/extra/hiredis-*"$LIBHIREDIS_VERSION" || exit
 mkdir build && cd build || exit
 CC=clang CXX=clang++ cmake \
   -DCMAKE_INSTALL_PREFIX="$TOP"/extra/libhiredis \
@@ -166,20 +171,22 @@ if ! make -j$(($(nproc --all) + 1)); then
 else
   make install
   export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
+  echo "LIBHIREDIS" >> "$TOP/extra/.progress"
 fi
 
 # build libevent
-cd "$TOP"/extra/libevent-* || exit
+cd "$TOP"/extra/libevent-"$LIBEVENT_VERSION" || exit
 ./configure --prefix="$TOP"/extra/libevent --disable-shared --enable-static "$DISABLE_SSL" CC=clang CXX=clang++
 if ! make -j$(($(nproc --all) + 1)); then
   echo -e "\n\e[1;31mlibevent compilation failed.\e[0m\n"
   exit 1
 else
   make install
+  echo "LIBEVENT" >> "$TOP/extra/.progress"
 fi
 
 # build nghttp2
-cd "$TOP"/extra/nghttp2-* || exit
+cd "$TOP"/extra/nghttp2-"$NGHTTP2_VERSION" || exit
 ./configure \
   --prefix="$TOP"/extra/libnghttp2 \
   --disable-shared \
@@ -190,10 +197,11 @@ if ! make -j$(($(nproc --all) + 1)); then
   exit 1
 else
   make install
+  echo "NGHTTP2" >> "$TOP/extra/.progress"
 fi
 
 # build expat
-cd "$TOP"/extra/expat-* || exit
+cd "$TOP"/extra/expat-"$EXPAT_SOURCE" || exit
 ./configure --prefix="$TOP"/extra/expat --without-docbook CC=clang CXX=clang++
 if ! make -j$(($(nproc --all) + 1)); then
   echo -e "\n\e[1;31mexpat compilation failed.\e[0m\n"
@@ -201,34 +209,35 @@ if ! make -j$(($(nproc --all) + 1)); then
 else
   make install
   export PKG_CONFIG_PATH=$TOP/extra/expat/lib/pkgconfig:$PKG_CONFIG_PATH
+  echo "EXPAT" >> "$TOP/extra/.progress"
 fi
 
 # build unbound
 cd "$TOP"/unbound-* || exit
 make clean > /dev/null 2>&1
 ./configure \
-  --prefix="$INSTALL_DIR"/unbound \
-  --with-username="" \
-  --with-chroot-dir="" \
-  --with-run-dir="" \
-  --disable-shared \
   --disable-rpath \
-  --enable-tfo-client \
-  --enable-tfo-server \
-  --enable-fully-static \
-  --enable-pie \
-  --enable-subnet \
-  --enable-dnscrypt \
+  --disable-shared \
   --enable-cachedb \
+  --enable-dnscrypt \
+  --enable-fully-static \
   --enable-ipsecmod \
   --enable-ipset \
-  --with-libnghttp2="$TOP/extra/libnghttp2" \
-  --with-libexpat="$TOP/extra/expat" \
+  --enable-pie \
+  --enable-subnet \
+  --enable-tfo-client \
+  --enable-tfo-server \
+  --prefix="$INSTALL_DIR"/unbound \
+  --with-chroot-dir="" \
   --with-libevent="$TOP/extra/libevent" \
-  --with-libsodium="$TOP/extra/libsodium" \
-  --with-libmnl="$TOP/extra/libmnl" \
-  --with-ssl="$TOP/extra/openssl" \
+  --with-libexpat="$TOP/extra/expat" \
   --with-libhiredis="$TOP/extra/libhiredis" \
+  --with-libmnl="$TOP/extra/libmnl" \
+  --with-libnghttp2="$TOP/extra/libnghttp2" \
+  --with-libsodium="$TOP/extra/libsodium" \
+  --with-run-dir="" \
+  --with-ssl="$TOP/extra/openssl" \
+  --with-username="" \
   CFLAGS="-Ofast -funsafe-math-optimizations -ffinite-math-only -fno-rounding-math -fexcess-precision=fast -funroll-loops -ffunction-sections -fdata-sections -pipe" \
   CC=clang CXX=clang++
 
