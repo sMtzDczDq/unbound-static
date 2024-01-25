@@ -85,7 +85,7 @@ libhiredis_source() {
 }
 
 libevent_source() {
-  if ! [ "$LIBEVENT_VERSION" = "$LIBEVENT_VERSION" ]; then
+  if ! [ "$LIBEVENT" = "$LIBEVENT_VERSION" ]; then
     wget https://github.com/libevent/libevent/releases/download/release-"$LIBEVENT_VERSION"/libevent-"$LIBEVENT_VERSION".tar.gz
     tar -zxf libevent-"$LIBEVENT_VERSION".tar.gz && rm -f libevent-"$LIBEVENT_VERSION".tar.gz
   else
