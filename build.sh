@@ -217,8 +217,8 @@ if ! [ "$LIBHIREDIS" = "$LIBHIREDIS_VERSION" ]; then
 else
   printf "\033[1;32mFound libhiredis %s skipping compilation\033[0m\n" "$LIBHIREDIS_VERSION"
 fi
-export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
-read -r -n 1
+#export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
+#read -r -n 1
 # build libevent
 if ! [ "$LIBEVENT" = "$LIBEVENT_VERSION" ]; then
   cd "$TOP"/extra/libevent-"$LIBEVENT_VERSION" || exit
@@ -287,7 +287,7 @@ make clean > /dev/null 2>&1
   --prefix="$INSTALL_DIR"/unbound \
   --with-chroot-dir="" \
   --with-libevent="$TOP/extra/libevent" \
-`#  --with-libexpat="$TOP/extra/expat"` \
+  --with-libexpat="$TOP/extra/expat" \
   --with-libhiredis="$TOP/extra/libhiredis" \
   --with-libmnl="$TOP/extra/libmnl" \
   --with-libnghttp2="$TOP/extra/libnghttp2" \
