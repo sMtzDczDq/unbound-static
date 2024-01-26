@@ -299,8 +299,9 @@ make clean > /dev/null 2>&1
   CC=clang CXX=clang++ \
   LDFLAGS="-L$TOP/extra/expat/lib -lexpat"
 
-make -j$(($(nproc --all)+1))
-if [ $? -eq 0 ]; then
+if make -j$(($(nproc --all)+1)); then
+#make -j$(($(nproc --all)+1))
+#if [ $? -eq 0 ]; then
   rm -rf "$INSTALL_DIR"/unbound
   sudo make install
   sudo llvm-strip "$INSTALL_DIR"/unbound/sbin/unbound* > /dev/null 2>&1
