@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x
+#set -x
 
 # Set ENV
 if [[ ! -f ./env.rc ]]; then
@@ -164,8 +164,8 @@ if ! [ "$OPENSSL" = "$OPENSSL_VERSION" ]; then
 else
   printf "\033[1;32mFound openssl %s skipping compilation\033[0m\n" "$OPENSSL_VERSION"
 fi
-export PKG_CONFIG_PATH=$TOP/extra/openssl/lib64/pkgconfig:$PKG_CONFIG_PATH
-read -r -n 1
+export PKG_CONFIG_PATH=$TOP/extra/openssl/lib64/pkgconfig
+#read -r -n 1
 # build libsodium
 if ! [ "$LIBSODIUM" = "$LIBSODIUM_VERSION" ]; then
   cd "$TOP"/extra/libsodium-"$LIBSODIUM_VERSION"/libsodium-stable || exit
@@ -268,7 +268,7 @@ else
   printf "\033[1;32mFound expat %s skipping compilation\033[0m\n" "$EXPAT_SOURCE"
 fi
 export PKG_CONFIG_PATH=$TOP/extra/expat/lib/pkgconfig:$PKG_CONFIG_PATH
-read -r -n 1
+# -r -n 1
 # build unbound
 cd "$TOP"/unbound-* || exit
 make clean > /dev/null 2>&1
