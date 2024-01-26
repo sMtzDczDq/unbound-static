@@ -165,7 +165,7 @@ else
   printf "\033[1;32mFound openssl %s skipping compilation\033[0m\n" "$OPENSSL_VERSION"
 fi
 export PKG_CONFIG_PATH=$TOP/extra/openssl/lib64/pkgconfig:$PKG_CONFIG_PATH
-
+read -r -n 1
 # build libsodium
 if ! [ "$LIBSODIUM" = "$LIBSODIUM_VERSION" ]; then
   cd "$TOP"/extra/libsodium-"$LIBSODIUM_VERSION"/libsodium-stable || exit
@@ -218,7 +218,7 @@ else
   printf "\033[1;32mFound libhiredis %s skipping compilation\033[0m\n" "$LIBHIREDIS_VERSION"
 fi
 export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
-
+read -r -n 1
 # build libevent
 if ! [ "$LIBEVENT" = "$LIBEVENT_VERSION" ]; then
   cd "$TOP"/extra/libevent-"$LIBEVENT_VERSION" || exit
@@ -268,7 +268,7 @@ else
   printf "\033[1;32mFound expat %s skipping compilation\033[0m\n" "$EXPAT_SOURCE"
 fi
 export PKG_CONFIG_PATH=$TOP/extra/expat/lib/pkgconfig:$PKG_CONFIG_PATH
-
+read -r -n 1
 # build unbound
 cd "$TOP"/unbound-* || exit
 make clean > /dev/null 2>&1
@@ -299,7 +299,8 @@ make clean > /dev/null 2>&1
   CC=clang CXX=clang++ \
   LDFLAGS="-L$TOP/extra/expat/lib -lexpat"
 
-if ! make -j$(($(nproc --all) + 1)); then
+make -j$(($(nproc --all)+1))
+if [ $? -eq 0 ]; then
   rm -rf "$INSTALL_DIR"/unbound
   sudo make install
   sudo llvm-strip "$INSTALL_DIR"/unbound/sbin/unbound* > /dev/null 2>&1
