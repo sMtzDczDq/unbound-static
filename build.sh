@@ -315,6 +315,7 @@ if make -j$(($(nproc --all)+1)); then
   cd "$WORK_PATH"/build_out && sha256sum ./* > sha256sum.txt
 else
   echo -e "\n\e[1;31munbound compilation failed.\e[0m\n"
+  env 2>&1 env.txt
   exit 1
 fi
 # export TOP="/home/mitch/unbound-static/static_build"
