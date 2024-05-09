@@ -291,12 +291,12 @@ make clean > /dev/null 2>&1
   --with-libmnl="$TOP/extra/libmnl" \
   --with-libnghttp2="$TOP/extra/libnghttp2" \
   --with-libsodium="$TOP/extra/libsodium" \
+  --with-libexpat="$TOP/extra/expat" \
   --with-run-dir="" \
   --with-ssl="$TOP/extra/openssl" \
   --with-username="" \
   CFLAGS="-Ofast -funsafe-math-optimizations -ffinite-math-only -fno-rounding-math -fexcess-precision=fast -funroll-loops -ffunction-sections -fdata-sections -pipe" \
-  CC=clang CXX=clang++ \
-  LDFLAGS="-L$TOP/extra/expat/lib -lexpat"
+  CC=clang CXX=clang++
 
 if make -j$(($(nproc --all)+1)); then
 #make -j$(($(nproc --all)+1))
