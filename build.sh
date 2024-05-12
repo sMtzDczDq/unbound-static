@@ -23,18 +23,12 @@ if [ ${#missing_pkgs[@]} -gt 0 ]; then
   printf 'Missing packages\nPlease run: sudo apt install %s\n' "${missing_pkgs[*]}"
   exit
 fi
-# # Check Version
-# CURRENT_VERSION=$1
-# LATEST_VERSION=$(curl -s -m 10 "https://api.github.com/repos/NLnetLabs/unbound/tags" | grep "name" | head -1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g;s/release-//g')
-# [ -z "$LATEST_VERSION" ] && echo -e "\e[1;31mFailed to get UNBOUND latest version.\e[0m" && exit 1
 
-# if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
-#   echo -e " \n\e[1;32munbound - $CURRENT_VERSION is already the latest version! \e[0m\n"
-#   exit 0
-# else
-#   UNBOUND_VERSION=$LATEST_VERSION
-#   echo "$LATEST_VERSION" > new_version
-# fi
+# Check Version
+UNBOUND_VERSION=$(curl -s -m 10 "https://api.github.com/repos/NLnetLabs/unbound/tags" | grep "name" | head -1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g;s/release-//g')
+if [ -z "$UNBOUND_VERSION" ]; then
+  echo -e "\e[1;31mFailed to get UNBOUND latest version.\e[0m" && exit 1
+fi
 
 WORK_PATH=$(pwd)
 mkdir -p "$WORK_PATH"/static_build/extra && cd "$WORK_PATH"/static_build || exit
@@ -112,7 +106,7 @@ expat_source() {
 
 cd "$TOP"/extra || exit
 if [ -f "$TOP/extra/.progress" ]; then
-#shellcheck disable=1091
+  #shellcheck disable=1091
   source "$TOP/extra/.progress"
 fi
 
@@ -298,9 +292,9 @@ make clean > /dev/null 2>&1
   CFLAGS="-Ofast -funsafe-math-optimizations -ffinite-math-only -fno-rounding-math -fexcess-precision=fast -funroll-loops -ffunction-sections -fdata-sections -pipe" \
   CC=clang CXX=clang++
 
-if make -j$(($(nproc --all)+1)); then
-#make -j$(($(nproc --all)+1))
-#if [ $? -eq 0 ]; then
+if make -j$(($(nproc --all) + 1)); then
+  #make -j$(($(nproc --all)+1))
+  #if [ $? -eq 0 ]; then
   rm -rf "$INSTALL_DIR"/unbound
   sudo make install
   sudo llvm-strip "$INSTALL_DIR"/unbound/sbin/unbound* > /dev/null 2>&1
@@ -315,7 +309,7 @@ if make -j$(($(nproc --all)+1)); then
   cd "$WORK_PATH"/build_out && sha256sum ./* > sha256sum.txt
 else
   echo -e "\n\e[1;31munbound compilation failed.\e[0m\n"
-#  env 2>&1 env.txt
+  #  env 2>&1 env.txt
   exit 1
 fi
 # export TOP="/home/mitch/unbound-static/static_build"

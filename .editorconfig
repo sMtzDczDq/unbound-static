@@ -12,5 +12,3 @@ function_next_line = false # --func-next-line
 end_of_line        = lf
 binary_next_line   = true
 
-[findandmediainfo]
-binary_next_line   = true
