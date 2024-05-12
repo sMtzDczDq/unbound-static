@@ -23,19 +23,18 @@ if [ ${#missing_pkgs[@]} -gt 0 ]; then
   printf 'Missing packages\nPlease run: sudo apt install %s\n' "${missing_pkgs[*]}"
   exit
 fi
-# Check Version
-CURRENT_VERSION=$1
-# LATEST_VERSION=$(curl -s https://nlnetlabs.nl/projects/unbound/download/ | grep "Current version" | awk '{print $2}')
-LATEST_VERSION=$(curl -s -m 10 "https://api.github.com/repos/NLnetLabs/unbound/tags" | grep "name" | head -1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g;s/release-//g')
-[ -z "$LATEST_VERSION" ] && echo -e "\e[1;31mFailed to get UNBOUND latest version.\e[0m" && exit 1
+# # Check Version
+# CURRENT_VERSION=$1
+# LATEST_VERSION=$(curl -s -m 10 "https://api.github.com/repos/NLnetLabs/unbound/tags" | grep "name" | head -1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g;s/release-//g')
+# [ -z "$LATEST_VERSION" ] && echo -e "\e[1;31mFailed to get UNBOUND latest version.\e[0m" && exit 1
 
-if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
-  echo -e " \n\e[1;32munbound - $CURRENT_VERSION is already the latest version! \e[0m\n"
-  exit 0
-else
-  UNBOUND_VERSION=$LATEST_VERSION
-  echo "$LATEST_VERSION" > new_version
-fi
+# if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
+#   echo -e " \n\e[1;32munbound - $CURRENT_VERSION is already the latest version! \e[0m\n"
+#   exit 0
+# else
+#   UNBOUND_VERSION=$LATEST_VERSION
+#   echo "$LATEST_VERSION" > new_version
+# fi
 
 WORK_PATH=$(pwd)
 mkdir -p "$WORK_PATH"/static_build/extra && cd "$WORK_PATH"/static_build || exit
