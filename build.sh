@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#set -x
+set -x
 
 # Set ENV
 if [[ ! -f ./env.rc ]]; then
@@ -112,42 +112,43 @@ expat_source() {
 
 cd "$TOP"/extra || exit
 if [ -f "$TOP/extra/.progress" ]; then
+#shellcheck disable=1091
   source "$TOP/extra/.progress"
 fi
 
-openssl_source || (
+openssl_source || {
   echo -e "\e[1;31mdownload openssl failed.\e[0m"
   exit 1
-)
-libsodium_source || (
+}
+libsodium_source || {
   echo -e "\e[1;31mdownload libsodium failed.\e[0m"
   exit 1
-)
-libmnl_source || (
+}
+libmnl_source || {
   echo -e "\e[1;31mdownload libmnl failed.\e[0m"
   exit 1
-)
-libhiredis_source || (
+}
+libhiredis_source || {
   echo -e "\e[1;31mdownload libhiredis failed.\e[0m"
   exit 1
-)
-libevent_source || (
+}
+libevent_source || {
   echo -e "\e[1;31mdownload libevent failed.\e[0m"
   exit 1
-)
-nghttp2_source || (
+}
+nghttp2_source || {
   echo -e "\e[1;31mdownload nghttp2 failed.\e[0m"
   exit 1
-)
-expat_source || (
+}
+expat_source || {
   echo -e "\e[1;31mdownload expat failed.\e[0m"
   exit 1
-)
+}
 cd "$TOP" || exit
-unbound_source || (
+unbound_source || {
   echo -e "\e[1;31mdownload unbound failed.\e[0m"
   exit 1
-)
+}
 
 # build openssl
 if ! [ "$OPENSSL" = "$OPENSSL_VERSION" ]; then
