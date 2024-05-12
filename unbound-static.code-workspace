@@ -1,0 +1,17 @@
+{
+	"folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+  },
+  "extensions": {
+    "recommendations": [
+      "editorconfig.editorconfig",
+      "github.vscode-github-actions",
+      "mads-hartmann.bash-ide-vscode",
+      "rogalmic.bash-debug"
+    ]
+  }
+}
