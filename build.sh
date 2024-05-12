@@ -20,10 +20,14 @@ for pkg in "${required_pkgs[@]}"; do
   fi
 done
 if [ ${#missing_pkgs[@]} -gt 0 ]; then
-  printf 'Missing packages\nPlease run: sudo apt install %s\n' "${missing_pkgs[*]}"
-  exit
+  printf 'Missing packages %s\n' "${missing_pkgs[*]}"
+  if read -r -s -n 1 -t 10 -p "Will install missing packages. Press any key within 10 seconds to abort"; then
+    echo "aborted"
+    exit
+  else
+    sudo apt update && sudo apt -y install "${missing_pkgs[*]}"
+  fi
 fi
-
 # Check Version
 UNBOUND_VERSION=$(curl -s -m 10 "https://api.github.com/repos/NLnetLabs/unbound/tags" | grep "name" | head -1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g;s/release-//g')
 if [ -z "$UNBOUND_VERSION" ]; then
