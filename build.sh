@@ -25,7 +25,7 @@ if [ ${#missing_pkgs[@]} -gt 0 ]; then
     echo "aborted"
     exit
   else
-    if ! sudo apt update && sudo apt -y install "${missing_pkgs[@]}"; then
+    if ! ( sudo apt update && sudo apt -y install "${missing_pkgs[@]}"); then
       echo -e "\e[1;31mInstalling missing packages failed.\e[0m"
       exit 1
     fi
