@@ -268,7 +268,7 @@ if ! [ "$EXPAT" = "$EXPAT_SOURCE" ]; then
 else
   printf "\033[1;32mFound expat %s skipping compilation\033[0m\n" "$EXPAT_SOURCE"
 fi
-export PKG_CONFIG_PATH=$TOP/extra/expat/lib/pkgconfig:$PKG_CONFIG_PATH
+export PKG_CONFIG_PATH=$TOP/extra/expat/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:$PKG_CONFIG_PATH
 # -r -n 1
 # build unbound
 cd "$TOP"/unbound-* || exit
