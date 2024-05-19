@@ -278,11 +278,12 @@ make clean > /dev/null 2>&1
   --disable-shared \
   --enable-cachedb \
   --enable-dnscrypt \
-  --enable-fully-static \
+  --enable-static \
   --enable-ipsecmod \
   --enable-ipset \
   --enable-pie \
   --enable-subnet \
+  --enable-systemd \
   --enable-tfo-client \
   --enable-tfo-server \
   --prefix="$INSTALL_DIR"/unbound \

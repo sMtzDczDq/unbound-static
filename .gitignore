@@ -1,5 +1,5 @@
 static_build/*
-
+unbound/*
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
