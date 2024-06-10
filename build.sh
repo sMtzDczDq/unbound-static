@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 #set -x
-
 # Set ENV
 if [[ ! -f ./env.rc ]]; then
   echo "Cannot find \`env.rc\` file."
