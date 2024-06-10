@@ -281,6 +281,7 @@ make clean > /dev/null 2>&1
   --enable-ipsecmod \
   --enable-ipset \
   --enable-pie \
+  --enable-static \
   --enable-subnet \
   --enable-systemd \
   --enable-tfo-client \
