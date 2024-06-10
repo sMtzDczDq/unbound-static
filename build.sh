@@ -278,7 +278,6 @@ make clean > /dev/null 2>&1
   --disable-shared \
   --enable-cachedb \
   --enable-dnscrypt \
-  --enable-fully-static \
   --enable-ipsecmod \
   --enable-ipset \
   --enable-pie \
