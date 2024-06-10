@@ -218,7 +218,7 @@ if ! [ "$LIBHIREDIS" = "$LIBHIREDIS_VERSION" ]; then
 else
   printf "\033[1;32mFound libhiredis %s skipping compilation\033[0m\n" "$LIBHIREDIS_VERSION"
 fi
-#export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
+export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
 #read -r -n 1
 # build libevent
 if ! [ "$LIBEVENT" = "$LIBEVENT_VERSION" ]; then
