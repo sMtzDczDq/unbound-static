@@ -25,7 +25,7 @@ if [ ${#missing_pkgs[@]} -gt 0 ]; then
     echo "aborted"
     exit
   else
-    if ! ( sudo apt update && sudo apt -y install "${missing_pkgs[@]}"); then
+    if ! (sudo apt update && sudo apt -y install "${missing_pkgs[@]}"); then
       echo -e "\e[1;31mInstalling missing packages failed.\e[0m"
       exit 1
     fi
@@ -213,12 +213,13 @@ if ! [ "$LIBHIREDIS" = "$LIBHIREDIS_VERSION" ]; then
     exit 1
   else
     make install
+    [ -d $TOP/extra/libhiredis/lib64 ] && ln -s $TOP/extra/libhiredis/lib64 $TOP/extra/libhiredis/lib
     echo "LIBHIREDIS=$LIBHIREDIS_VERSION" >> "$TOP/extra/.progress"
   fi
 else
   printf "\033[1;32mFound libhiredis %s skipping compilation\033[0m\n" "$LIBHIREDIS_VERSION"
 fi
-#export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
+export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
 #read -r -n 1
 # build libevent
 if ! [ "$LIBEVENT" = "$LIBEVENT_VERSION" ]; then
