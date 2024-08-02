@@ -289,7 +289,7 @@ make clean > /dev/null 2>&1
   --prefix="$INSTALL_DIR"/unbound \
   --with-chroot-dir="" \
   --with-libevent="$TOP/extra/libevent" \
-  --with-libhiredis="$TOP/extra/libhiredis" \
+  --with-libhiredis="/usr/local" \
   --with-libmnl="$TOP/extra/libmnl" \
   --with-libnghttp2="$TOP/extra/libnghttp2" \
   --with-libsodium="$TOP/extra/libsodium" \
