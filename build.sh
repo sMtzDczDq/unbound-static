@@ -213,7 +213,7 @@ if ! [ "$LIBHIREDIS" = "$LIBHIREDIS_VERSION" ]; then
     exit 1
   else
     make install
-    [ -d $TOP/extra/libhiredis/lib64 ] && ln -s $TOP/extra/libhiredis/lib64 $TOP/extra/libhiredis/lib
+    [ -d "$TOP"/extra/libhiredis/lib64 ] && ln -s "$TOP"/extra/libhiredis/lib64 "$TOP"/extra/libhiredis/lib
     echo "LIBHIREDIS=$LIBHIREDIS_VERSION" >> "$TOP/extra/.progress"
   fi
 else
@@ -224,7 +224,7 @@ export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
 # build libevent
 if ! [ "$LIBEVENT" = "$LIBEVENT_VERSION" ]; then
   cd "$TOP"/extra/libevent-"$LIBEVENT_VERSION" || exit
-  ./configure --prefix="$TOP"/extra/libevent --disable-shared --enable-static "$DISABLE_SSL" CC=clang CXX=clang++
+  ./configure --prefix="$TOP"/extra/libevent --disable-shared --enable-static CC=clang CXX=clang++
   if ! make -j$(($(nproc --all) + 1)); then
     echo -e "\n\e[1;31mlibevent compilation failed.\e[0m\n"
     exit 1
