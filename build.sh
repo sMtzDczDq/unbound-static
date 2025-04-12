@@ -32,7 +32,7 @@ if [ ${#missing_pkgs[@]} -gt 0 ]; then
   fi
 fi
 # Check Version
-UNBOUND_VERSION=$(curl -s -m 10 "https://api.github.com/repos/NLnetLabs/unbound/tags" | grep "name" | head -1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g;s/release-//g')
+UNBOUND_VERSION=$(curl -s -m 10 "https://api.github.com/repos/NLnetLabs/unbound/releases/latest" | grep "tag_name" | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g;s/release-//g')
 if [ -z "$UNBOUND_VERSION" ]; then
   echo -e "\e[1;31mFailed to get UNBOUND latest version.\e[0m" && exit 1
 fi
