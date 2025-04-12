@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#set -x
+set -x
 
 # Set ENV
 if [[ ! -f ./env.rc ]]; then
@@ -10,7 +10,7 @@ else
 fi
 declare -a missing_pkgs
 for pkg in "${required_pkgs[@]}"; do
-  pkgman() { dpkg -s "${pkg}"; }
+  pkgman() { apk info "${pkg}"; }
   #  if pkgman > /dev/null 2>&1; then
   if pkgman > /dev/null 2>&1; then
     printf "\033[1;36mFound %s\033[0m\n" "$pkg"
@@ -25,7 +25,7 @@ if [ ${#missing_pkgs[@]} -gt 0 ]; then
     echo "aborted"
     exit
   else
-    if ! (sudo apt update && sudo apt -y install "${missing_pkgs[@]}"); then
+    if ! (doas apk update && doas apk add "${missing_pkgs[@]}"); then
       echo -e "\e[1;31mInstalling missing packages failed.\e[0m"
       exit 1
     fi
