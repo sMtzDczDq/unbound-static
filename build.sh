@@ -304,8 +304,8 @@ if make -j$(($(nproc --all) + 1)); then
   #make -j$(($(nproc --all)+1))
   #if [ $? -eq 0 ]; then
   rm -rf "$INSTALL_DIR"/unbound
-  sudo make install
-  sudo llvm-strip "$INSTALL_DIR"/unbound/sbin/unbound* > /dev/null 2>&1
+  doas make install
+  doas llvm-strip "$INSTALL_DIR"/unbound/sbin/unbound* > /dev/null 2>&1
   echo -e " \n\e[1;32munbound-static-$UNBOUND_VERSION compilation success\e[0m\n"
   "$INSTALL_DIR"/unbound/sbin/unbound -V
   pushd "$INSTALL_DIR" || exit
