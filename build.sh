@@ -287,13 +287,22 @@ make clean > /dev/null 2>&1
   --enable-subnet \
   --enable-tfo-client \
   --enable-tfo-server \
-  --prefix="$INSTALL_DIR"/unbound \
+  --prefix=/usr \
+  --includedir=${prefix}/include \
+  --infodir=${prefix}/share/info \
+  --libdir=${prefix}/lib/x86_64-linux-gnu \
+  --localstatedir=/var \
+  --mandir=${prefix}/share/man \
+  --runstatedir=/run \
+  --sysconfdir=/etc \
   --with-chroot-dir="" \
   --with-libevent="$TOP/extra/libevent" \
+  --with-libexpat="$TOP/extra/expat" \
   --with-libmnl="$TOP/extra/libmnl" \
   --with-libnghttp2="$TOP/extra/libnghttp2" \
   --with-libsodium="$TOP/extra/libsodium" \
-  --with-libexpat="$TOP/extra/expat" \
+  --with-pidfile=/run/unbound.pid \
+  --with-rootkey-file=/usr/share/dns/root.key \
   --with-run-dir="" \
   --with-ssl="$TOP/extra/openssl" \
   --with-username="" \
