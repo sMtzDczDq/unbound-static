@@ -129,10 +129,10 @@ libmnl_source || {
   echo -e "\e[1;31mdownload libmnl failed.\e[0m"
   exit 1
 }
-libhiredis_source || {
-  echo -e "\e[1;31mdownload libhiredis failed.\e[0m"
-  exit 1
-}
+#libhiredis_source || {
+#  echo -e "\e[1;31mdownload libhiredis failed.\e[0m"
+#  exit 1
+#}
 libevent_source || {
   echo -e "\e[1;31mdownload libevent failed.\e[0m"
   exit 1
@@ -198,28 +198,29 @@ else
   printf "\033[1;32mFound libmnl %s skipping compilation\033[0m\n" "$LIBMNL_VERSION"
 fi
 
-# build libhiredis
-if ! [ "$LIBHIREDIS" = "$LIBHIREDIS_VERSION" ]; then
-  cd "$TOP"/extra/hiredis-"$LIBHIREDIS_VERSION" || exit
-  mkdir build && cd build || exit
-  CC=clang CXX=clang++ cmake \
-    -DCMAKE_INSTALL_PREFIX="$TOP"/extra/libhiredis \
-    -DENABLE_SSL=ON \
-    -DENABLE_EXAMPLES=ON \
-    -DOPENSSL_ROOT_DIR="$TOP/extra/openssl" \
-    ..
-  if ! make -j$(($(nproc --all) + 1)); then
-    echo -e "\n\e[1;31mlibhiredis compilation failed.\e[0m\n"
-    exit 1
-  else
-    make install
-    [ -d "$TOP"/extra/libhiredis/lib64 ] && ln -s "$TOP"/extra/libhiredis/lib64 "$TOP"/extra/libhiredis/lib
-    echo "LIBHIREDIS=$LIBHIREDIS_VERSION" >> "$TOP/extra/.progress"
-  fi
-else
-  printf "\033[1;32mFound libhiredis %s skipping compilation\033[0m\n" "$LIBHIREDIS_VERSION"
-fi
-export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
+## build libhiredis
+#if ! [ "$LIBHIREDIS" = "$LIBHIREDIS_VERSION" ]; then
+#  cd "$TOP"/extra/hiredis-"$LIBHIREDIS_VERSION" || exit
+#  mkdir build && cd build || exit
+#  CC=clang CXX=clang++ cmake \
+#    -DCMAKE_INSTALL_PREFIX="$TOP"/extra/libhiredis \
+#    -DENABLE_SSL=ON \
+#    -DENABLE_EXAMPLES=ON \
+#    -DOPENSSL_ROOT_DIR="$TOP/extra/openssl" \
+#    ..
+#  if ! make -j$(($(nproc --all) + 1)); then
+#    echo -e "\n\e[1;31mlibhiredis compilation failed.\e[0m\n"
+#    exit 1
+#  else
+#    make install
+#    [ -d "$TOP"/extra/libhiredis/lib64 ] && ln -s "$TOP"/extra/libhiredis/lib64 "$TOP"/extra/libhiredis/lib
+#    echo "LIBHIREDIS=$LIBHIREDIS_VERSION" >> "$TOP/extra/.progress"
+#  fi
+#else
+#  printf "\033[1;32mFound libhiredis %s skipping compilation\033[0m\n" "$LIBHIREDIS_VERSION"
+#fi
+#export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
+#
 #read -r -n 1
 # build libevent
 if ! [ "$LIBEVENT" = "$LIBEVENT_VERSION" ]; then
@@ -289,7 +290,6 @@ make clean > /dev/null 2>&1
   --prefix="$INSTALL_DIR"/unbound \
   --with-chroot-dir="" \
   --with-libevent="$TOP/extra/libevent" \
-  --with-libhiredis="$TOP/extra/libhiredis" \
   --with-libmnl="$TOP/extra/libmnl" \
   --with-libnghttp2="$TOP/extra/libnghttp2" \
   --with-libsodium="$TOP/extra/libsodium" \
@@ -299,6 +299,7 @@ make clean > /dev/null 2>&1
   --with-username="" \
   CFLAGS="-Ofast -funsafe-math-optimizations -ffinite-math-only -fno-rounding-math -fexcess-precision=fast -funroll-loops -ffunction-sections -fdata-sections -pipe" \
   CC=clang CXX=clang++
+##  --with-libhiredis="$TOP/extra/libhiredis" \
 
 if make -j$(($(nproc --all) + 1)); then
   #make -j$(($(nproc --all)+1))
