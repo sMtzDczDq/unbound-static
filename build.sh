@@ -10,7 +10,7 @@ else
 fi
 declare -a missing_pkgs
 for pkg in "${required_pkgs[@]}"; do
-  pkgman() { apk info "${pkg}"; }
+  pkgman() { apk info -e "${pkg}"; }
   #  if pkgman > /dev/null 2>&1; then
   if pkgman > /dev/null 2>&1; then
     printf "\033[1;36mFound %s\033[0m\n" "$pkg"
