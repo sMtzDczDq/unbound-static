@@ -320,5 +320,3 @@ else
   #  env 2>&1 env.txt
   exit 1
 fi
-# export TOP="/home/user/unbound-static/static_build"
-#export PKG_CONFIG_PATH=$TOP/extra/expat/lib/pkgconfig:$TOP/extra/libhiredis/lib/pkgconfig:$TOP/extra/openssl/lib64/pkgconfig:$PKG_CONFIG_PATH
