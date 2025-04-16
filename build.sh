@@ -273,6 +273,7 @@ fi
 export PKG_CONFIG_PATH=$TOP/extra/expat/lib/pkgconfig:$PKG_CONFIG_PATH
 # -r -n 1
 # build unbound
+prefix="/usr"
 cd "$TOP"/unbound-* || exit
 make clean > /dev/null 2>&1
 ./configure \
