@@ -273,7 +273,6 @@ fi
 export PKG_CONFIG_PATH=$TOP/extra/expat/lib/pkgconfig:$PKG_CONFIG_PATH
 # -r -n 1
 # build unbound
-prefix="/usr"
 cd "$TOP"/unbound-* || exit
 make clean > /dev/null 2>&1
 ./configure \
@@ -288,12 +287,11 @@ make clean > /dev/null 2>&1
   --enable-subnet \
   --enable-tfo-client \
   --enable-tfo-server \
-  --prefix=/usr \
-  --includedir=${prefix}/include \
-  --infodir=${prefix}/share/info \
-  --libdir=${prefix}/lib/x86_64-linux-gnu \
+  --includedir=\${prefix}/include \
+  --infodir=\${prefix}/share/info \
+  --libdir=\${prefix}/lib/x86_64-linux-gnu \
   --localstatedir=/var \
-  --mandir=${prefix}/share/man \
+  --mandir=\${prefix}/share/man \
   --runstatedir=/run \
   --sysconfdir=/etc \
   --with-chroot-dir="" \
