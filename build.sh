@@ -198,29 +198,29 @@ else
   printf "\033[1;32mFound libmnl %s skipping compilation\033[0m\n" "$LIBMNL_VERSION"
 fi
 
-## build libhiredis
-#if ! [ "$LIBHIREDIS" = "$LIBHIREDIS_VERSION" ]; then
-#  cd "$TOP"/extra/hiredis-"$LIBHIREDIS_VERSION" || exit
-#  mkdir build && cd build || exit
-#  CC=clang CXX=clang++ cmake \
-#    -DCMAKE_INSTALL_PREFIX="$TOP"/extra/libhiredis \
-#    -DENABLE_SSL=ON \
-#    -DENABLE_EXAMPLES=ON \
-#    -DOPENSSL_ROOT_DIR="$TOP/extra/openssl" \
-#    ..
-#  if ! make -j$(($(nproc --all) + 1)); then
-#    echo -e "\n\e[1;31mlibhiredis compilation failed.\e[0m\n"
-#    exit 1
-#  else
-#    make install
-#    [ -d "$TOP"/extra/libhiredis/lib64 ] && ln -s "$TOP"/extra/libhiredis/lib64 "$TOP"/extra/libhiredis/lib
-#    echo "LIBHIREDIS=$LIBHIREDIS_VERSION" >> "$TOP/extra/.progress"
-#  fi
-#else
-#  printf "\033[1;32mFound libhiredis %s skipping compilation\033[0m\n" "$LIBHIREDIS_VERSION"
-#fi
-#export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
-#
+# build libhiredis
+if ! [ "$LIBHIREDIS" = "$LIBHIREDIS_VERSION" ]; then
+  cd "$TOP"/extra/hiredis-"$LIBHIREDIS_VERSION" || exit
+  mkdir build && cd build || exit
+  CC=clang CXX=clang++ cmake \
+    -DCMAKE_INSTALL_PREFIX="$TOP"/extra/libhiredis \
+    -DENABLE_SSL=ON \
+    -DENABLE_EXAMPLES=ON \
+    -DOPENSSL_ROOT_DIR="$TOP/extra/openssl" \
+    ..
+  if ! make -j$(($(nproc --all) + 1)); then
+    echo -e "\n\e[1;31mlibhiredis compilation failed.\e[0m\n"
+    exit 1
+  else
+    make install
+    [ -d "$TOP"/extra/libhiredis/lib64 ] && ln -s "$TOP"/extra/libhiredis/lib64 "$TOP"/extra/libhiredis/lib
+    echo "LIBHIREDIS=$LIBHIREDIS_VERSION" >> "$TOP/extra/.progress"
+  fi
+else
+  printf "\033[1;32mFound libhiredis %s skipping compilation\033[0m\n" "$LIBHIREDIS_VERSION"
+fi
+export PKG_CONFIG_PATH=$TOP/extra/libhiredis/lib/pkgconfig:$PKG_CONFIG_PATH
+
 #read -r -n 1
 # build libevent
 if ! [ "$LIBEVENT" = "$LIBEVENT_VERSION" ]; then
